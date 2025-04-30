@@ -1,0 +1,16 @@
+[project]
+name = "formodoro"
+version = "0.1.0"
+description = "A super simple forms server"
+authors = ["Andrii Trelin <andrii@quiddityai.com>"]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+  "fastapi[all]",
+  "slowapi",
+  "pymongo",
+  "notifiers",
+  "uvicorn[standard]",
+]
