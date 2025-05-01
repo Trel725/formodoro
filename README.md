@@ -43,6 +43,40 @@ Additionally, you can pass the redirect URL as a query parameter, e.g.
 `http://localhost:28100/submit?redirect=http://example.com`.
 This might be useful if you want to redirect to a different URL after form submission.
 
+## Example
+
+In the simplest case, you can just add URL of your server running Formodoro to your form action. For example, if your server is running on `https://yourserver.com`, you can use the following HTML code:
+```
+<form
+    action="https://yourserver.com/submit/?redirect=https://yourserver.com/success"
+    method="POST"
+>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="surname">Surname:</label>
+    <input type="text" id="surname" name="surname" required />
+
+    <button type="submit">Submit</button>
+</form>
+``` 
+
+Note that the `redirect` parameter can be used to redirect to a different URL after form submission, e.g. to a success page without any JS or other dependencies. If the method fails, redirect will not be performed.
+
+Take into account that this example assumes that `/submit` is mapped to the Formodoro server. If you are using NGINX server, this can be achieved by adding the following lines to your NGINX configuration:
+```
+    location /submit/ {
+       proxy_pass http://localhost:28100/submit;
+        proxy_set_header Host $host;
+        proxy_set_header Origin $http_origin;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+```
+When reverse proxy is not used, you can directly use the Formodoro server URL in the form action, e.g. `http://yourserver.com:28100/submit`, but this is strongly discouraged as it uses naked HTTP.
+
 
 ## Other
 
