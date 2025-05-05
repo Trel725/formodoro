@@ -7,11 +7,11 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from notifiers import notify
-from pymongo import MongoClient
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from starlette.datastructures import FormData
 from starlette.status import HTTP_429_TOO_MANY_REQUESTS
+from .db import insert_data
 
 # Initialize app and rate limiter
 app = FastAPI()
@@ -19,10 +19,6 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(HTTP_429_TOO_MANY_REQUESTS, _rate_limit_exceeded_handler)
 
-# MongoDB setup
-client = MongoClient(os.environ.get("MONGODB_URL", "mongodb://localhost:27017"))
-db = client[os.environ.get("MONGODB_DB", "mydatabase")]
-collection = db[os.environ.get("MONGODB_COLLECTION", "mycollection")]
 
 # CORS setup: only allow your frontend domain
 origins = os.environ.get("CORS_ORIGINS", "https://yourfrontend.com").split(",")
@@ -93,8 +89,8 @@ def main(
 
     try:
         data["timestamp"] = datetime.now().isoformat()  # Add current timestamp
-        collection.insert_one(data)
-        data.pop("_id", None)  # Remove MongoDB ObjectId from response
+        insert_data(data)  # Insert data into the database
+        data.pop("_id", None)  # Remove MongoDB ObjectId from response if present
     except Exception as e:
         return JSONResponse(
             content={"status": "error", "message": str(e)},

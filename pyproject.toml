@@ -13,4 +13,5 @@ dependencies = [
   "pymongo",
   "notifiers",
   "uvicorn[standard]",
+  "tinydb",
 ]

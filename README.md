@@ -1,4 +1,4 @@
-# Formodoro: a ridiculously simple form data storage
+# Formodoro: a ridiculously simple form data storage 
 
 ## Problem
 
@@ -13,7 +13,9 @@ In addition, Formodoro includes nice [notifiers library](https://github.com/liii
 ## Features
 
 - Extremely simple to use
-- Saves arbitrary form and JSON data to MongoDB
+- Select MongoDB or TinyDB as a backend
+- Saves arbitrary form and JSON data to the selected backend
+- Supports CORS for easy integration with static websites
 - Supports multiple notification services
 - Optionally redirects to a custom URL after form submission for totally static websites
 
@@ -42,6 +44,13 @@ In addition, Formodoro includes nice [notifiers library](https://github.com/liii
 Additionally, you can pass the redirect URL as a query parameter, e.g.
 `http://localhost:28100/submit?redirect=http://example.com`.
 This might be useful if you want to redirect to a different URL after form submission.
+
+## MongoDB vs TinyDB
+
+Formodoro supports two backends: MongoDB and TinyDB. MongoDB is a powerful NoSQL database that is suitable for production use, while TinyDB is a lightweight, file-based database that is easy to set up and use for small projects or testing purposes. TinyDB is true open source, while MongoDB has its own license, enforcing some restrictions on usage, see [MongoDB license](https://www.mongodb.com/licensing/server-side-public-license). To be completely open source, Formodoro uses TinyDB as a backend by default. If you want to use MongoDB, you need to use `docker-compose.mongo.yml` override as follows:
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.mongo.yml up -d
+```
 
 ## Example
 
