@@ -87,9 +87,10 @@ def main(
         if notify_provider == "n8n":
             n8n_webhook = os.environ.get("N8N_WEBHOOK")
             n8n_auth_header = os.environ.get("N8N_AUTH_HEADER")
+            n8n_auth_header_name = os.environ.get("N8N_AUTH_HEADER_NAME", "Authorization")
             if not n8n_webhook or not n8n_auth_header:
                 raise Exception("N8N_WEBHOOK or N8N_AUTH_HEADER not set in environment")
-            headers = {"Authorization": n8n_auth_header, "Content-Type": "application/json"}
+            headers = {n8n_auth_header_name: n8n_auth_header, "Content-Type": "application/json"}
             resp = requests.post(n8n_webhook, headers=headers, data=json.dumps(data))
             if not resp.ok:
                 raise Exception(f"n8n webhook error: {resp.status_code} {resp.text}")
