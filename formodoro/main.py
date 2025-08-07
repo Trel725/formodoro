@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from notifiers import notify
+import requests
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from starlette.datastructures import FormData
@@ -83,7 +84,17 @@ def main(
         raise HTTPException(status_code=400, detail="Unsupported data type")
 
     try:
-        notify(notify_provider, message=f"New submission received:\n {json.dumps(data, indent=2)}")
+        if notify_provider == "n8n":
+            n8n_webhook = os.environ.get("N8N_WEBHOOK")
+            n8n_auth_header = os.environ.get("N8N_AUTH_HEADER")
+            if not n8n_webhook or not n8n_auth_header:
+                raise Exception("N8N_WEBHOOK or N8N_AUTH_HEADER not set in environment")
+            headers = {"Authorization": n8n_auth_header, "Content-Type": "application/json"}
+            resp = requests.post(n8n_webhook, headers=headers, data=json.dumps(data))
+            if not resp.ok:
+                raise Exception(f"n8n webhook error: {resp.status_code} {resp.text}")
+        else:
+            notify(notify_provider, message=f"New submission received:\n {json.dumps(data, indent=2)}")
     except Exception as e:
         print(f"Notification error: {e}")
 
